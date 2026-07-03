@@ -6,10 +6,10 @@ export async function POST(req) {
     const token = process.env.HF_TOKEN;
 
     if (!token) {
-      return NextResponse.json({ error: 'System Access Key (HF_TOKEN) is not configured in Vercel settings.' }, { status: 500 });
+      return NextResponse.json({ error: 'System Access Key (HF_TOKEN) is missing from Vercel.' }, { status: 500 });
     }
 
-    // Direct routing to the official Hugging Face Serverless LTX-Video Pipeline Engine
+    // Direct background cloud array proxy mapping to the model layer
     const response = await fetch('https://huggingface.co', {
       method: 'POST',
       headers: {
@@ -19,28 +19,25 @@ export async function POST(req) {
       body: JSON.stringify({
         inputs: prompt,
         parameters: {
-          width: 768,
-          height: 432,
-          num_frames: 49,
-          fps: 24
+          num_inference_steps: 30,
+          aspect_ratio: "16:9"
         }
       }),
     });
 
     if (!response.ok) {
       const errText = await response.text();
-      return NextResponse.json({ error: `AI Processing Node Error: ${errText}` }, { status: response.status });
+      return NextResponse.json({ error: `The cloud processing engine is currently warm-loading. Try hitting generate again in a moment! Log: ${errText}` }, { status: response.status });
     }
 
     const blob = await response.blob();
     const buffer = Buffer.from(await blob.arrayBuffer());
     
-    // Encode binary video array stream cleanly to web-ready source layout data
     const base64Video = buffer.toString('base64');
     const dataUrl = `data:video/mp4;base64,${base64Video}`;
 
     return NextResponse.json({ videoUrl: dataUrl });
   } catch (error) {
-    return NextResponse.json({ error: `Internal Engine Error: ${error.message}` }, { status: 500 });
+    return NextResponse.json({ error: `Internal Terminal Engine Crash: ${error.message}` }, { status: 500 });
   }
 }
