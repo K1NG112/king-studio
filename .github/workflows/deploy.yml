@@ -1,0 +1,23 @@
+name: Sync to Hugging Face Spaces
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository Files
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Deploy Code Directly to Spaces Node
+        uses: huggingface/actions-space-sync@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          huggingface_token: ${{ secrets.HF_TOKEN }}
+          huggingface_username: K1NGz112345
+          huggingface_space_name: king-studio
